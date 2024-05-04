@@ -1,0 +1,26 @@
+[
+{
+  "directory": "/Users/iley/CLionProjects/op/build",
+  "command": "/usr/bin/clang   -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.0.sdk -o CMakeFiles/op.dir/Gen_file.c.o -c /Users/iley/CLionProjects/op/Gen_file.c",
+  "file": "/Users/iley/CLionProjects/op/Gen_file.c",
+  "output": "CMakeFiles/op.dir/Gen_file.c.o"
+},
+{
+  "directory": "/Users/iley/CLionProjects/op/build",
+  "command": "/usr/bin/clang   -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.0.sdk -o CMakeFiles/op.dir/Var_str.c.o -c /Users/iley/CLionProjects/op/Var_str.c",
+  "file": "/Users/iley/CLionProjects/op/Var_str.c",
+  "output": "CMakeFiles/op.dir/Var_str.c.o"
+},
+{
+  "directory": "/Users/iley/CLionProjects/op/build",
+  "command": "/usr/bin/clang   -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.0.sdk -o CMakeFiles/op.dir/File_out.c.o -c /Users/iley/CLionProjects/op/File_out.c",
+  "file": "/Users/iley/CLionProjects/op/File_out.c",
+  "output": "CMakeFiles/op.dir/File_out.c.o"
+},
+{
+  "directory": "/Users/iley/CLionProjects/op/build",
+  "command": "/usr/bin/clang   -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.0.sdk -o CMakeFiles/op.dir/Alg.c.o -c /Users/iley/CLionProjects/op/Alg.c",
+  "file": "/Users/iley/CLionProjects/op/Alg.c",
+  "output": "CMakeFiles/op.dir/Alg.c.o"
+}
+]

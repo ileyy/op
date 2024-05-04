@@ -1,0 +1,10 @@
+---
+triple:          'arm64-apple-darwin'
+binary-path:     '/Users/iley/CLionProjects/op/Gen_file'
+relocations:
+  - { offsetInCU: 0x26, offset: 0x26, size: 0x8, addend: 0x0, symName: _main, symObjAddr: 0x0, symBinAddr: 0x100003A3C, symSize: 0x108 }
+  - { offsetInCU: 0x9E, offset: 0x9E, size: 0x8, addend: 0x0, symName: _main, symObjAddr: 0x0, symBinAddr: 0x100003A3C, symSize: 0x108 }
+  - { offsetInCU: 0xF0, offset: 0xF0, size: 0x8, addend: 0x0, symName: _generateObstacles, symObjAddr: 0x108, symBinAddr: 0x100003B44, symSize: 0x1B0 }
+  - { offsetInCU: 0x176, offset: 0x176, size: 0x8, addend: 0x0, symName: _selectPoints, symObjAddr: 0x2B8, symBinAddr: 0x100003CF4, symSize: 0x48 }
+  - { offsetInCU: 0x1A8, offset: 0x1A8, size: 0x8, addend: 0x0, symName: _checkOverlap, symObjAddr: 0x300, symBinAddr: 0x100003D3C, symSize: 0xF8 }
+...
