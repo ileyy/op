@@ -6,7 +6,7 @@ Cell start, end;
 
 void printMap();
 
-int main() {
+int main3() {
     printMap();
     return 0;
 }

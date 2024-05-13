@@ -13,7 +13,7 @@ Cell *findLowestFNode(Stack *openList);
 int heuristic(Cell *a, Cell *b);
 void aStarSearch(Cell start, Cell end);
 
-int main() {
+int main2() {
     Cell start = {1, 1};
     Cell end = {18, 18};
 

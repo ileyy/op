@@ -15,7 +15,7 @@ int checkOverlap(Obstacle *obstacles, int count, Obstacle newObstacle);
 void generateObstacles(FILE *file, int width, int height, int numObstacles);
 void selectPoints(int width, int height);
 
-int main() {
+int main1() {
     int width, height, numObstacles;
 
     srand(time(NULL)); // remove
