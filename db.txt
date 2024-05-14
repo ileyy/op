@@ -1,0 +1,4 @@
+Width and height of the map: (20, 20)
+Drone size: 1
+Start point A: (2, 3) 
+End point B: (17, 18)
