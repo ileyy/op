@@ -3,10 +3,15 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+typedef struct Cell {
+  int x, y;
+  int f, g, h;
+  int walkable;
+  struct Cell *parent;
+} Cell;
 
 typedef struct Node {
-  int x;
-  int y;
+  Cell *cell;
   struct Node *next;
 } Node;
 
@@ -24,13 +29,6 @@ typedef struct {
   Point end;
 } Obstacle;
 
-typedef struct Cell {
-  int x, y;
-  int f, g, h;
-  int walkable;
-  struct Cell *parent;
-} Cell;
-
 typedef struct {
   int width;
   int height;
@@ -38,11 +36,11 @@ typedef struct {
   Point start, end;
 } MapConfig;
 
-void push(Stack *s, int x, int y);
+void push(Stack *s, Cell *cell);
 Node *pop(Stack *s);
 int isEmpty(Stack *s);
 void initStack(Stack *s);
-int isOnList(Stack *s, int x, int y);
+int isOnList(Stack *s, Cell *cell);
 void random1();
 
 #endif

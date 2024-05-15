@@ -1,1 +1,5 @@
-Obstacle 1: Start (0, 17), End (13, 10)
+Obstacle 1: Start (10, 9), End (10, 17)
+Obstacle 2: Start (1, 17), End (4, 20)
+Obstacle 3: Start (10, 3), End (10, 20)
+Obstacle 4: Start (1, 14), End (16, 14)
+Obstacle 5: Start (13, 4), End (15, 4)

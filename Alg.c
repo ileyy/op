@@ -3,26 +3,17 @@
 #define INTMAX 2147483647
 
 extern int width, height;
-extern int numObstacles;
-#define MAP_HEIGHT 1000
-#define MAP_WIDTH 1000
-
-Cell map[MAP_HEIGHT][MAP_WIDTH];
+Cell map[1000][1000];
 Cell start, end;
 
 void initializeMap();
 void setObstacles();
-Cell *findLowestFNode(Stack *openList);
-int heuristic(Cell *a, Cell *b);
 void aStarSearch(Cell start, Cell end);
 void readMapConfig(MapConfig *config);
 
 int main2() {
   MapConfig config;
   readMapConfig(&config);
-
-  Cell start = {config.start.x, config.start.y};
-  Cell end = {config.end.x, config.end.y};
 
   initializeMap();
   setObstacles();
@@ -34,11 +25,13 @@ int main2() {
 void initializeMap() {
   for (int i = 0; i < height; i++) {
     for (int j = 0; j < width; j++) {
-      map[i][j].x = j;
-      map[i][j].y = i;
-      map[i][j].walkable = 1;
-      map[i][j].parent = NULL;
-      map[i][j].g = map[i][j].h = map[i][j].f = 0;
+      map[i][j] = (Cell){.x = j,
+                         .y = i,
+                         .walkable = 1,
+                         .parent = NULL,
+                         .g = 0,
+                         .h = 0,
+                         .f = 0};
     }
   }
 }
@@ -47,7 +40,7 @@ void setObstacles() {
   const char *filename = "map.txt";
   FILE *file = fopen(filename, "r");
   if (!file) {
-    perror("Failed to open file");
+    perror("Failed to open file for obstacles");
     return;
   }
 
@@ -64,16 +57,12 @@ void setObstacles() {
       y1 = y2;
       y2 = temp;
     }
-
-    for (int i = y1; i <= y2; i++) {
-      for (int j = x1; j <= x2; j++) {
-        if (i >= 0 && i < height && j >= 0 && j < width) {
-          map[i][j].walkable = 0;
-        }
+    for (int i = y1; i <= y2 && i < height; i++) {
+      for (int j = x1; j <= x2 && j < width; j++) {
+        map[i][j].walkable = 0;
       }
     }
   }
-
   fclose(file);
 }
 
@@ -91,24 +80,29 @@ Cell *findLowestFNode(Stack *openList) {
 
   while (!isEmpty(openList)) {
     node = pop(openList);
-    Cell *current = &map[node->y][node->x];
-    if (current->f < lowestF) {
+    if (node == NULL) continue;
+
+    Cell *current = node->cell;
+    if (current && current->f < lowestF) {
       if (lowestFCell) {
-        push(&temp, lowestFCell->x, lowestFCell->y);
+        push(&temp, lowestFCell);
       }
       lowestF = current->f;
       lowestFCell = current;
     } else {
-      push(&temp, current->x, current->y);
+      push(&temp, current);
     }
     free(node);
   }
 
   while (!isEmpty(&temp)) {
     node = pop(&temp);
-    push(openList, node->x, node->y);
+    if (node && node->cell) {
+      push(openList, node->cell);
+    }
     free(node);
   }
+
   return lowestFCell;
 }
 
@@ -117,10 +111,10 @@ void aStarSearch(Cell start, Cell end) {
   initStack(&openList);
   initStack(&closedList);
 
-  push(&openList, start.x, start.y);
-  map[start.y][start.x].g = 0;
-  map[start.y][start.x].h = heuristic(&start, &end);
-  map[start.y][start.x].f = map[start.y][start.x].h;
+  push(&openList, &start);
+  start.g = 0;
+  start.h = heuristic(&start, &end);
+  start.f = start.h;
 
   while (!isEmpty(&openList)) {
     Cell *current = findLowestFNode(&openList);
@@ -130,19 +124,20 @@ void aStarSearch(Cell start, Cell end) {
       return;
     }
 
-    push(&closedList, current->x, current->y);
+    push(&closedList, current);
 
     for (int i = 0; i < 8; i++) {
       int newX = current->x + directions[i][0];
       int newY = current->y + directions[i][1];
 
-      if (newX >= 0 && newX < MAP_WIDTH && newY >= 0 && newY < MAP_HEIGHT) {
-        if (!map[newY][newX].walkable || isOnList(&closedList, newX, newY)) {
+      if (newX >= 0 && newX < width && newY >= 0 && newY < height) {
+        if (!map[newY][newX].walkable ||
+            isOnList(&closedList, &map[newY][newX])) {
           continue;
         }
 
         int tentativeGScore = current->g + 1;
-        int isNewNode = !isOnList(&openList, newX, newY);
+        int isNewNode = !isOnList(&openList, &map[newY][newX]);
         if (isNewNode || tentativeGScore < map[newY][newX].g) {
           map[newY][newX].g = tentativeGScore;
           map[newY][newX].h = heuristic(&map[newY][newX], &end);
@@ -150,7 +145,7 @@ void aStarSearch(Cell start, Cell end) {
           map[newY][newX].parent = current;
 
           if (isNewNode) {
-            push(&openList, newX, newY);
+            push(&openList, &map[newY][newX]);
           }
         }
       }
@@ -166,20 +161,17 @@ void readMapConfig(MapConfig *config) {
     perror("Failed to open file");
     return;
   }
+  fscanf(file1, "Width and height of the map: (%d, %d)\nDrone size: %d",
+         &config->width, &config->height, &config->droneSize);
+  fclose(file1);
+
   const char *filename2 = "map.txt";
   FILE *file2 = fopen(filename2, "r");
   if (!file2) {
     perror("Failed to open file");
     return;
   }
-
-  fscanf(file1, "Width and height of the map: (%d, %d)\nDrone size: %d",
-         &config->width, &config->height, &config->droneSize);
   fscanf(file2, "Start point A: (%d, %d) \nEnd point B: (%d, %d)",
          &config->start.x, &config->start.y, &config->end.x, &config->end.y);
-
-  fclose(file1);
   fclose(file2);
-
-  return;
 }

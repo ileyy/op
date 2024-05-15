@@ -4,16 +4,13 @@ void initStack(Stack *s) { s->top = NULL; }
 
 int isEmpty(Stack *s) { return s->top == NULL; }
 
-void push(Stack *s, int x, int y) {
+void push(Stack *s, Cell *cell) {
   Node *newNode = (Node *)malloc(sizeof(Node));
-  if (newNode == NULL) {
-    printf("Unable to allocate memory for new node\n");
-    return;
+  if (newNode) {
+    newNode->cell = cell;
+    newNode->next = s->top;
+    s->top = newNode;
   }
-  newNode->x = x;
-  newNode->y = y;
-  newNode->next = s->top;
-  s->top = newNode;
 }
 
 Node *pop(Stack *s) {
@@ -25,10 +22,10 @@ Node *pop(Stack *s) {
   return nodeToPop;
 }
 
-int isOnList(Stack *s, int x, int y) {
+int isOnList(Stack *s, Cell *cell) {
   Node *current = s->top;
   while (current != NULL) {
-    if (current->x == x && current->y == y) {
+    if (current->cell == cell) {
       return 1;
     }
     current = current->next;
