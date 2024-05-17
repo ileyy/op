@@ -124,10 +124,12 @@ void selectPoints(int width, int height) {
 }
 
 void selectStartEnd(FILE *file, Cell *A, Cell *B) {
-  printf("Enter coordinates for start point A: ");
-  scanf("%d %d", &A->x, &A->y);
-  printf("Enter coordinates for end point B: ");
-  scanf("%d %d", &B->x, &B->y);
+  printf("Enter x coordinate for start point A: ");
+  scanf("%d", &A->x);
+  A->y = 0;
+  printf("Enter x coordinate for end point B: ");
+  scanf("%d", &B->x);
+  B->y = height - 1;
   fprintf(file, "Start point A: (%d, %d) \nEnd point B: (%d, %d)", A->x, A->y,
           B->x, B->y);
 }

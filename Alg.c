@@ -57,9 +57,19 @@ void setObstacles() {
       y1 = y2;
       y2 = temp;
     }
-    for (int i = y1; i <= y2 && i < height; i++) {
-      for (int j = x1; j <= x2 && j < width; j++) {
-        map[i][j].walkable = 0;
+    if (x2 - x1 == y2 - y1) {
+      for (int i = y1; i <= y2 && i < height; i++) {
+        for (int j = x1; j <= x2 && j < width; j++) {
+          if (x2 - j == y2 - i) {
+            map[i][j].walkable = 0;
+          }
+        }
+      }
+    } else {
+      for (int i = y1; i <= y2 && i < height; i++) {
+        for (int j = x1; j <= x2 && j < width; j++) {
+          map[i][j].walkable = 0;
+        }
       }
     }
   }

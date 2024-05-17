@@ -1,3 +1,3 @@
-Start point A: (2, 2) 
-End point B: (17, 18)Width and height of the map: (20, 20)
-Drone size: 2
+Start point A: (1, 0) 
+End point B: (19, 49)Width and height of the map: (50, 50)
+Drone size: 3
