@@ -22,25 +22,18 @@ int main1() {
 
   selectPoints(width, height);
 
-  FILE *db = fopen("db.txt", "w");
-  if (db == NULL) {
-    perror("Error opening db.txt");
-    return 1;
-  }
-  selectStartEnd(db, &start, &end);
-
   FILE *map = fopen("map.txt", "w");
   if (map == NULL) {
     perror("Error opening map.txt");
     return 1;
   }
 
+  fprintf(map, "Width and height of the map: (%d, %d)\n", width, height);
+  fprintf(map, "Drone size: %d\n", droneSize);
+  selectStartEnd(map, &start, &end);
   generateObstacles(map, width, height, numObstacles, droneSize, start, end);
-  fclose(map);
 
-  fprintf(db, "Width and height of the map: (%d, %d)\n", width, height);
-  fprintf(db, "Drone size: %d\n", droneSize);
-  fclose(db);
+  fclose(map);
 
   return 0;
 }
@@ -130,6 +123,6 @@ void selectStartEnd(FILE *file, Cell *A, Cell *B) {
   printf("Enter x coordinate for end point B: ");
   scanf("%d", &B->x);
   B->y = height - 1;
-  fprintf(file, "Start point A: (%d, %d) \nEnd point B: (%d, %d)", A->x, A->y,
+  fprintf(file, "Start point A: (%d, %d) \nEnd point B: (%d, %d)\n", A->x, A->y,
           B->x, B->y);
 }

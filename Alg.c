@@ -44,6 +44,10 @@ void setObstacles() {
     return;
   }
 
+  char **lineptr;
+  size_t a = 4;
+  getline(lineptr, &a, file);
+
   int x1, y1, x2, y2;
   while (fscanf(file, "Obstacle %*d: Start (%d, %d), End (%d, %d)\n", &x1, &y1,
                 &x2, &y2) == 4) {
