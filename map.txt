@@ -1,9 +1,0 @@
-Width and height of the map: (40, 40)
-Drone size: 2
-Start point A: (1, 0) 
-End point B: (19, 39)
-Obstacle 1: Start (11, 16), End (14, 16)
-Obstacle 2: Start (34, 13), End (34, 20)
-Obstacle 3: Start (7, 6), End (7, 20)
-Obstacle 4: Start (2, 2), End (2, 36)
-Obstacle 5: Start (27, 14), End (37, 24)
