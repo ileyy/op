@@ -1,128 +1,125 @@
 #include "Var_str.h"
 
-int width, height, numObstacles, droneSize;
-Cell start, end;
-
-int checkOverlap(Obstacle *obstacles, int count, Obstacle newObstacle, Cell A,
-                 Cell B, int droneSize);
-void generateObstacles(FILE *file, int width, int height, int numObstacles,
-                       int droneSize, Cell A, Cell B);
-void selectPoints(int width, int height);
-void selectStartEnd(FILE *file, Cell *A, Cell *B);
+int generateObstacles(int droneSize, int width, int height, int numObstacles,
+                      rectangle obstacles[]);
 
 int main1() {
-  random1();
+  int width, height, droneSize, numObstacles;
+  int result = 0;
+  printf("Enter the drone size (length of one side): ");
+  scanf("%d", &droneSize);
 
   printf("Enter the map width and height: ");
   scanf("%d %d", &width, &height);
-  printf("Enter the drone size (length of one side): ");
-  scanf("%d", &droneSize);
-  printf("Enter the number of obstacles: ");
-  scanf("%d", &numObstacles);
-
-  selectPoints(width, height);
-
-  FILE *map = fopen("map.txt", "w");
-  if (map == NULL) {
-    perror("Error opening map.txt");
-    return 1;
+  if (!(droneSize < width && droneSize < height)) {
+    do {
+      printf("Map size must be greater than drone size. Try again: ");
+      scanf("%d %d", &width, &height);
+    } while (!(droneSize < width && droneSize < height));
   }
 
-  fprintf(map, "Width and height of the map: (%d, %d)\n", width, height);
-  fprintf(map, "Drone size: %d\n", droneSize);
-  selectStartEnd(map, &start, &end);
-  generateObstacles(map, width, height, numObstacles, droneSize, start, end);
-
-  fclose(map);
-
+  while (!result) {
+    printf("Enter number of obstacles: ");
+    scanf("%d", &numObstacles);
+    rectangle *obstacles = malloc(numObstacles * sizeof(rectangle));
+    if (obstacles == NULL) {
+      fprintf(stderr, "Error allocating memmory.\n");
+      return 0;
+    }
+    result =
+        generateObstacles(droneSize, width, height, numObstacles, obstacles);
+    if (!result) {
+      printf("Error.\n");
+      free(obstacles);
+    } else {
+      FILE *map = fopen("map.txt", "w");
+      if (map == NULL) {
+        fprintf(stderr, "Error openning file.\n");
+        return 1;
+      }
+      fprintf(map, "Map size(W x H): %d x %d\n", width, height);
+      fprintf(map, "Drone size: %d\n", droneSize);
+      fprintf(map, "Number of obstacles: %d\n", numObstacles);
+      for (int i = 0; i < numObstacles; i++) {
+        orderPoints(&obstacles[i], 1);
+        fprintf(map, "Obstacle coordinates: (%d, %d) (%d, %d)\n",
+                obstacles[i].a.x, obstacles[i].a.y, obstacles[i].b.x,
+                obstacles[i].b.y);
+      }
+      fprintf(map, "Start point: (, )\n");
+      fprintf(map, "End point: (, )\n");
+      fclose(map);
+      free(obstacles);
+      printf(
+          "Generating done. Please enter start and end points at the end of "
+          "the map.txt file.\n");
+    }
+  }
   return 0;
 }
 
-int checkOverlap(Obstacle *obstacles, int count, Obstacle newObstacle, Cell A,
-                 Cell B, int droneSize) {
-  for (int i = 0; i < count; i++) {
-    int buffer = droneSize;
-    int left = obstacles[i].start.x - buffer;
-    int right = obstacles[i].end.x + buffer;
-    int top = obstacles[i].start.y - buffer;
-    int bottom = obstacles[i].end.y + buffer;
-
-    if ((newObstacle.start.x >= left && newObstacle.start.x <= right &&
-         newObstacle.start.y >= top && newObstacle.start.y <= bottom) ||
-        (newObstacle.end.x >= left && newObstacle.end.x <= right &&
-         newObstacle.end.y >= top && newObstacle.end.y <= bottom)) {
-      return 1;
-    }
-  }
-  if ((newObstacle.start.x == A.x && newObstacle.start.y == A.y) ||
-      (newObstacle.end.x == A.x && newObstacle.end.y == A.y) ||
-      (newObstacle.start.x == B.x && newObstacle.start.y == B.y) ||
-      (newObstacle.end.x == B.x && newObstacle.end.y == B.y)) {
-    return 1;
-  }
-  return 0;
-}
-
-void generateObstacles(FILE *file, int width, int height, int numObstacles,
-                       int droneSize, Cell A, Cell B) {
-  Obstacle *obstacles = (Obstacle *)malloc(numObstacles * sizeof(Obstacle));
-  if (obstacles == NULL) {
-    printf("Memory allocation failed.\n");
-    return;
-  }
-
-  int count = 0;
-  while (count < numObstacles) {
-    Point start = {rand() % (width - droneSize), rand() % (height - droneSize)};
-
-    Point end;
-    int obstacleType = rand() % 3;
-    int valid = 0;
-    while (!valid) {
-      switch (obstacleType) {
-        case 0:
-          end.y = start.y;
-          end.x = start.x + (rand() % (width - start.x) + 1);
-          break;
-        case 1:
-          end.x = start.x;
-          end.y = start.y + (rand() % (height - start.y) + 1);
-          break;
-        case 2: {
-          int length = rand() % (width - start.x) + 1;
-          length = length < (height - start.y) ? length : (height - start.y);
-          end.x = start.x + length;
-          end.y = start.y + length;
-        } break;
+int generateObstacles(int droneSize, int width, int height, int numObstacles,
+                      rectangle obstacles[]) {
+  srand(time(NULL));
+  for (int i = 0; i < numObstacles;) {
+    int attempts = 0;
+    while (attempts < numObstacles * width) {
+      rectangle newObstacle;
+      int type = rand() % 3;
+      newObstacle.a.x = rand() % width;
+      newObstacle.a.y = rand() % height;
+      if (type == 0) {  // horizontal
+        newObstacle.b.x = newObstacle.a.x + rand() % (width - newObstacle.a.x);
+        newObstacle.b.y = newObstacle.a.y;
+      } else if (type == 1) {  // vertical
+        newObstacle.b.x = newObstacle.a.x;
+        newObstacle.b.y = newObstacle.a.y + rand() % (height - newObstacle.a.y);
+      } else {  // diagonal
+        int direction = rand() % 4;
+        if (direction == 0) {  // -1 1
+          int delta = rand() % (imin(newObstacle.a.x, newObstacle.a.y) + 1);
+          newObstacle.b.x = newObstacle.a.x - delta;
+          newObstacle.b.y = newObstacle.a.y - delta;
+        } else if (direction == 1) {  // 1 -1
+          int delta =
+              rand() %
+              (imin(width - newObstacle.a.x, height - newObstacle.a.y) + 1);
+          newObstacle.b.x = newObstacle.a.x + delta;
+          newObstacle.b.y = newObstacle.a.y + delta;
+        } else if (direction == 2) {  // -1 -1
+          int delta =
+              rand() % (imin(newObstacle.a.x, height - newObstacle.a.y) + 1);
+          newObstacle.b.x = newObstacle.a.x - delta;
+          newObstacle.b.y = newObstacle.a.y + delta;
+        } else if (direction == 3) {  // 1 1
+          int delta =
+              rand() % (imin(width - newObstacle.a.x, newObstacle.a.y) + 1);
+          newObstacle.b.x = newObstacle.a.x + delta;
+          newObstacle.b.y = newObstacle.a.y - delta;
+        }
       }
-      if (end.x != start.x || end.y != start.y) {
-        valid = 1;
+      if (newObstacle.b.x >= 0 && newObstacle.b.x < width - 1 &&
+          newObstacle.b.y >= 0 && newObstacle.b.y < height - 1 &&
+          !(newObstacle.a.x == newObstacle.b.x &&
+            newObstacle.a.y == newObstacle.b.y)) {
+        if (!checkIntersecrion(newObstacle, obstacles, i) &&
+            checkDistance(newObstacle, obstacles, i, droneSize) &&
+            !checkObstacle(newObstacle.a.x, newObstacle.a.y, obstacles, i) &&
+            !checkObstacle(newObstacle.b.x, newObstacle.b.y, obstacles, i)) {
+          if (sqrt((pow(newObstacle.b.x - newObstacle.a.x, 2)) +
+                   (pow(newObstacle.b.y - newObstacle.a.y, 2))) <=
+              imin(width, height) / 2) {
+            obstacles[i++] = newObstacle;
+            break;
+          }
+        }
       }
+      attempts++;
     }
-
-    Obstacle newObstacle = {start, end};
-    if (!checkOverlap(obstacles, count, newObstacle, A, B, droneSize)) {
-      obstacles[count++] = newObstacle;
-      fprintf(file, "Obstacle %d: Start (%d, %d), End (%d, %d)\n", count,
-              newObstacle.start.x, newObstacle.start.y, newObstacle.end.x,
-              newObstacle.end.y);
+    if (attempts >= numObstacles * width) {
+      printf("Error generating obstacles.\n");
+      return 0;  // error
     }
   }
-  free(obstacles);
-}
-
-void selectPoints(int width, int height) {
-  printf("Select points A and B within the map dimensions of %d by %d.\n",
-         width, height);
-}
-
-void selectStartEnd(FILE *file, Cell *A, Cell *B) {
-  printf("Enter x coordinate for start point A: ");
-  scanf("%d", &A->x);
-  A->y = 0;
-  printf("Enter x coordinate for end point B: ");
-  scanf("%d", &B->x);
-  B->y = height - 1;
-  fprintf(file, "Start point A: (%d, %d) \nEnd point B: (%d, %d)\n", A->x, A->y,
-          B->x, B->y);
+  return 1;  // done
 }
