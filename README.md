@@ -1,3 +1,1 @@
-`Shell  
-make up  
-`
+`make up`
